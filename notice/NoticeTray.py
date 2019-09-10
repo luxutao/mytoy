@@ -14,9 +14,12 @@ from PyQt5.QtGui import *
 class TrayIcon(QSystemTrayIcon):
     def __init__(self, parent=None):
         super(TrayIcon, self).__init__(parent)
+        self.pid = 0
         self.showMenu()
         self.other()
-        
+        self.timer = QTimer(self) #初始化一个定时器
+        self.timer.timeout.connect(self.operate) #计时结束调用operate()方法
+        self.timer.start(500) #设置计时间隔并启动
 
     def showMenu(self):
         "设计托盘的菜单，这里我实现了一个二级菜单"
@@ -39,7 +42,7 @@ class TrayIcon(QSystemTrayIcon):
         #把鼠标点击图标的信号和槽连接
         self.messageClicked.connect(self.mClied)
         #把鼠标点击弹出消息的信号和槽连接
-        self.setIcon(QIcon("/home/luxutao/Projects/notice/20190820012153770_easyicon_net_32.ico"))
+        self.setIcon(QIcon("/home/luxutao/Projects/notice/trayIcon.ico"))
         self.icon = self.MessageIcon()
         #设置图标
 
@@ -68,6 +71,14 @@ class TrayIcon(QSystemTrayIcon):
         # self.parent().exit()
         qApp.quit()
         sys.exit()
+
+    def operate(self):
+        if self.pid == 0:
+            self.setIcon(QIcon("/home/luxutao/Projects/notice/trayIcon.ico"))
+            self.pid = 1
+        else:
+            self.setIcon(QIcon())
+            self.pid = 0
 
 class window(QWidget):
     def __init__(self, parent=None):
